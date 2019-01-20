@@ -1,0 +1,85 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Click Bait</title>
+    <!-- A standalone build of the client soket.io is exposed by default by the server at /socket.io/socket.io.js-->
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="scores">
+            High Score:<span id="highScore">0</span></p>
+            <p>Current Score:<span id="currentScore">0</span></p>
+        </div>
+
+        <h2>Click Bait - Proto</h2>
+        <div>
+            <p><span id="playerCount">0</span> active users</p>
+            <p id="serverMsg">server msgs will be here</p>
+        </div>
+        <div class="dynamicContent">
+            <button class="hide" id="btn1">CLICK ME</button>
+        </div>
+    </div>
+</body>
+<script>
+        var socket = io();
+        //not specifying any URL when I call io(), since it defaults to trying to connect to the host that serves the page.
+    
+        //handes the user count updates
+        socket.on('userCount', function (data){
+            document.querySelector('#playerCount').innerHTML = data.count;
+        });
+
+        socket.on('score', function(data){
+            document.querySelector('#highScore').textContent = data.highScore;
+            document.querySelector('#currentScore').textContent = data.score;
+        });
+
+        socket.on('hello', function (msg){
+            console.dir(msg);
+            document.querySelector('#serverMsg').textContent = msg;
+        });
+        //on a clickMe event show the button
+        socket.on('clickMe', function(){
+            document.querySelector('#btn1').classList.remove('hide');
+            setTimeout(function(){
+                document.querySelector('#btn1').classList.add('hide')}
+                ,2800);
+        });
+
+        //event listeners
+        document.querySelector('#btn1').addEventListener('click',function(){
+            socket.emit('clicked');
+            console.log('clicked the button');
+            document.querySelector('#btn1').classList.add('hide');
+        });
+</script>
+<style>
+    body{
+        text-align: center;
+    }
+    .container{
+        top: 150px;
+        position: relative;
+    }
+    #btn1{
+        width: 90%;
+        height: 150px;
+        background-color: darkorange;
+        color: white;
+        border-radius: 5px;
+        font-weight: 500;
+    }
+    .hide{
+        display: none;
+    }
+    #scores{
+        right: 10px;
+        top: 10px;
+        position: fixed;
+    }
+</style>
+</html>
